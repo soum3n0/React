@@ -1,0 +1,6 @@
+node_modules
+.parcel-cache
+dist
+/Food Ordering Website/style.css
+coverage
+.env
