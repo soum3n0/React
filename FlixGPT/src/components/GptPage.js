@@ -5,9 +5,11 @@ import { lang } from '../utils/langConstrants';
 import gemini from '../utils/gemini';
 import { API_OPTION, GET_MOVIE_BY_NAME_API } from '../utils/constrants';
 import { updateSearchResult } from '../utils/gptSlice';
+import MovieList from "./MovieList";
 
 const GptPage = () => {
     const langKey = useSelector(store => store.config.lang);
+    const {searchResult, gptMovies} = useSelector(store => store.gpt);
     const searchText = useRef(null);
     const dispatch = useDispatch();
 
@@ -44,8 +46,10 @@ const GptPage = () => {
         const promiseArray = movieNameArray.map( movie => getMovieFromTMDB(movie) );
         const movieListArray = await Promise.all(promiseArray);
         // console.log(movieListArray);
-        dispatch(updateSearchResult({movieName: text, movieList: movieListArray}));
+        dispatch(updateSearchResult({movieName: movieNameArray, movieList: movieListArray}));
     }
+
+    // if(!gptMovies) return null;
 
     return (
         <div className='pt-20 flex justify-center items-center bg-darkBlue h-screen w-screen text-white'>
@@ -54,9 +58,11 @@ const GptPage = () => {
                     <input type='text' ref={searchText} placeholder={lang[langKey].gptInputPlaceholder} className='bg-black py-2 px-4 rounded-lg w-1/2 ' />
                     <button className='px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg' onClick={handleGeminiSearchClick}>{lang[langKey].gptSendBtn}</button>
                 </form>
-                <p className='overflow-auto scrollbar-thin scrollbar-track-gray-600 scrollbar-thumb-gray-700'>
-
-                </p>
+                <div className='overflow-auto scrollbar-thin scrollbar-track-gray-600 scrollbar-thumb-gray-700'>
+                <div className='p-4'>
+                    {gptMovies && gptMovies.map((movie, index) => <MovieList key={index} title={searchResult[index]} movies={movie}/>)}
+                    </div>
+                </div>
             </div>
         </div>
     )

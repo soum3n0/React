@@ -1,4 +1,3 @@
-import React from 'react'
 import { POSTER_URL } from '../utils/constrants';
 
 const MovieCard = ({ movie }) => {
@@ -12,4 +11,4 @@ const MovieCard = ({ movie }) => {
     )
 }
 
-export default MovieCard
+export default MovieCard;
