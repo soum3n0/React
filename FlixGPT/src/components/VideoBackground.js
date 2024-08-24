@@ -1,10 +1,8 @@
 import React from 'react';
 import useMovieTrailer from '../Hooks/useMovieTrailer';
-import { useSelector } from 'react-redux';
 
 const VideoBackground = ({ id }) => {
-    useMovieTrailer(id);
-    const trailerDetails = useSelector(store => store.movies.trailerVideo);
+    const trailerDetails = useMovieTrailer(id);
     return (
         <div className='relative w-screen h-screen overflow-hidden'>
             <iframe className='fixed top-0 left-0 w-full h-full object-cover scale-150'

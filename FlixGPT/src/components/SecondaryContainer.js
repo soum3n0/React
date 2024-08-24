@@ -28,9 +28,9 @@ const SecondaryContainer = () => {
         <div className='w-screen relative z-10' style={{ backgroundColor }}>
             <div className='relative -mt-24'>
                 <MovieList title={"Now Playing"} movies={movies.nowPlayingMovies} />
-                <MovieList title={"Now Playing"} movies={movies.nowPlayingMovies} />
-                <MovieList title={"Now Playing"} movies={movies.nowPlayingMovies} />
-                <MovieList title={"Now Playing"} movies={movies.nowPlayingMovies} />
+                <MovieList title={"Upcoming Movies"} movies={movies.upcomingMovies} />
+                <MovieList title={"Popular Movies"} movies={movies.popularMovies} />
+                <MovieList title={"Top Rated Movies"} movies={movies.topRatedMovies} />
             </div>
         </div>
     )

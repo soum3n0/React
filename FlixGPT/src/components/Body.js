@@ -3,6 +3,8 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Login from './Login';
 import Browse from './Browse';
 import Header from './Header';
+import MovieInfo from './MovieInfo';
+import AiPage from './AiPage';
 
 const appRouter = createBrowserRouter([
     {
@@ -16,6 +18,14 @@ const appRouter = createBrowserRouter([
             {
                 path: "/browse",
                 element: <Browse />,
+            },
+            {
+                path: "/movie/:movieId",
+                element: <MovieInfo/>
+            },
+            {
+                path: "/flixai",
+                element: <AiPage/>
             }
         ]
     },

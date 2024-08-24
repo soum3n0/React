@@ -21,7 +21,7 @@ const RestaurantMenu = () => {
     //     setResInfo(json?.data);
     // }
 
-    const resInfo = useRestaurantMenu(resId);
+    const resInfo = useRestaurantMenu(resId); 
 
     if (resInfo === null) return <MenuShimmer/>;
 
