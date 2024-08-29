@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import logo from '../flixgpt.png';
 import { useDispatch, useSelector } from 'react-redux';
 import { auth } from '../utils/firebase';
@@ -11,13 +11,17 @@ import usePasswordChange from '../Hooks/usePasswordChange';
 
 const Header = () => {
     const user = useSelector(store => store.user);
-    const langKey = useSelector(store => store.config.lang);
+    const language = useSelector(store => store.config);
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const [scrollY, setScrollY] = useState(0);
     const [aiPage, setAiPage] = useState(false);
     const [accountDetails, setAccountDetails] = useState(false);
     const [activeSettings, setActiveSettings] = useState(false);
+    const accountRef = useRef(null);
+
+    const langKey = language.lang;
+    const langName = language.langName;
 
     useEffect(() => {
         const handleScroll = () => {
@@ -27,8 +31,17 @@ const Header = () => {
 
         window.addEventListener('scroll', handleScroll);
 
+        const handleClickOutside = (event) => {
+            if (accountRef.current && !accountRef.current.contains(event.target)) {
+                setAccountDetails(false);
+                setActiveSettings(false);
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+
         return () => {
             window.removeEventListener('scroll', handleScroll);
+            document.removeEventListener('mousedown', handleClickOutside);
         };
     }, []);
 
@@ -70,26 +83,18 @@ const Header = () => {
         dispatch(changeLanguage(e.target.value));
     }
 
-    const { requestPasswordChange } = usePasswordChange();
+    const { requestPasswordChange, success, error } = usePasswordChange();
     const handlePasswordReset = () => {
         requestPasswordChange();
     }
 
-    const handleClick =  () => {
+    const handleClick = () => {
         if (activeSettings) {
             setActiveSettings(false);
         }
         setAccountDetails(!accountDetails)
     }
 
-    const handleBlur = () => {
-        if (accountDetails) {
-            setAccountDetails(false);
-            if (activeSettings) {
-                setActiveSettings(false);
-            }
-        }
-    };
 
     return (
         <div>
@@ -99,9 +104,9 @@ const Header = () => {
                     {user && <div className='flex items-center relative'>
                         <button className='bg-red-700 hover:bg-red-500 px-4 py-2 mr-8 text-white rounded-lg mb-1' onClick={toggleGPT}>{aiPage ? lang[langKey].home : lang[langKey].askGptBtn}</button>
 
-                        <i title='Your Account' onClick={handleClick} onBlur={handleBlur} tabIndex="0" className="fa-solid fa-circle-user text-3xl text-white cursor-pointer hover:text-gray-400"></i>
+                        <i title='Your Account' onClick={handleClick} tabIndex="0" className="fa-solid fa-circle-user text-3xl text-white cursor-pointer hover:text-gray-400"></i>
 
-                        {accountDetails && <ul onMouseDown={(e) => e.preventDefault()} className='bg-black absolute top-14 right-0 p-6 rounded-lg min-w-max flex flex-col gap-2 text-white text-center border border-white'>
+                        {accountDetails && <ul ref={accountRef} className='bg-black absolute top-14 right-0 p-6 rounded-lg min-w-max flex flex-col gap-2 text-white text-center border border-white'>
                             <li className='font-bold text-center'>Hi! {user.name}</li>
                             <li className='text-center'>{user.email}</li>
                             <li onClick={() => setActiveSettings(!activeSettings)} className='flex gap-2 items-center justify-center cursor-pointer hover:text-gray-400'>
@@ -111,9 +116,10 @@ const Header = () => {
                             {activeSettings && <ul className='bg-black absolute right-full top-2/3 w-auto p-4 rounded-lg flex flex-col gap-2 border border-white'>
                                 <li onClick={handlePasswordReset} className='cursor-pointer hover:text-red-500'>Reset Password <i className="fa-solid fa-key"></i></li>
                                 <li className='flex gap-2 items-center mx-auto'>
-                                    <span>Language</span>
-                                    <select className='p-1 cursor-pointer bg-black border border-gray-500 text-gray-500 rounded-lg' onChange={changeLang}>
-                                        {languageList.map(lang => <option key={lang.identifier} value={lang.identifier}>{lang.value}</option>)}
+                                    <label htmlFor="language">Language</label>
+                                    <select name="language" className='p-1 cursor-pointer bg-black border border-gray-500 text-gray-500 rounded-lg' onChange={changeLang}>
+                                    <option className='text-green-500'>{langName}</option>
+                                        {languageList.map(lang => <option key={lang.identifier} value={`${lang.identifier},${lang.value}`}>{lang.value}</option>)}
                                     </select>
                                 </li>
                             </ul>}
@@ -124,8 +130,9 @@ const Header = () => {
                             </li>
                         </ul>}
 
-                        { }
                     </div>}
+                        {success && <span className='absolute z-50 top-20 left-1/2 -translate-x-1/2 bg-green-500 px-4 py-2 rounded-lg text-lg animate-fadeOut'>Reset Email Sent Successfully</span>}
+                        {error && <span className='absolute z-50 top-20 left-1/2 -translate-x-1/2 bg-red-500 px-4 py-2 rounded-lg text-lg text-white'>Error Occured</span>}
                 </div>
             </div>
             <Outlet />

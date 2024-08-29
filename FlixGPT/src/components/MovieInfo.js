@@ -4,11 +4,13 @@ import { IMDB_LINK, POSTER_URL } from "../utils/constrants";
 import { useEffect, useState } from "react";
 import { Circle } from 'rc-progress';
 import useMovieTrailer from "../Hooks/useMovieTrailer";
+import LoadingPage from "./LoadingPage";
 
 const MovieInfo = () => {
     const { movieId } = useParams();
     const [movieDetails, setMovieDetails] = useState(null);
     const [trailerPage, setTrailerPage] = useState(false);
+    const [loading, setLoading] = useState(false);
     const trailerDetails = useMovieTrailer(movieId);
     const details = useMovieDetails(movieId);
 
@@ -16,7 +18,7 @@ const MovieInfo = () => {
         setMovieDetails(details);
     }, [details]);
 
-    if (!movieDetails) return <h1>not loaded</h1>;
+    if (!movieDetails) return <LoadingPage/>;
 
     function convertRuntime(totalMinutes) {
         const hours = Math.floor(totalMinutes / 60);
@@ -41,6 +43,15 @@ const MovieInfo = () => {
         }
     }
 
+    const handleIframeLoad = () => {
+        setLoading(false);
+    };
+
+    const handleTrailerClick = () => { 
+        setTrailerPage(true);
+        setLoading(true);
+    }
+
     const { poster_path, budget, revenue, genres, homepage, original_title, release_date, runtime, tagline, overview, vote_average, status, imdb_id, original_language } = movieDetails;
     return (
         <div className="bg-darkBlue grid grid-flow-col grid-cols-4 pt-24 p-8 h-screen">
@@ -62,7 +73,7 @@ const MovieInfo = () => {
                         <Circle className="h-14" percent={vote_average / 10 * 100} strokeWidth={8} strokeColor="#D3D3D3" />
                         <span title="Rating" className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">{vote_average.toFixed(1)}</span>
                     </div>
-                    <button onClick={() => { setTrailerPage(true) }} className="hover:text-gray-400 hover:border-gray-400 border border-white px-4 my-2 rounded-lg"><i className="fa-solid fa-play"></i> Play Trailer</button>
+                    <button onClick={handleTrailerClick} className="hover:text-gray-400 hover:border-gray-400 border border-white px-4 my-2 rounded-lg"><i className="fa-solid fa-play"></i> Play Trailer</button>
                 </div>
                 <div>
                     <span className="text-gray-400 text-lg italic">{tagline}</span>
@@ -92,9 +103,10 @@ const MovieInfo = () => {
                 </div>
             </section>
             {trailerPage && <div>
+                {loading && <LoadingPage />}
                 <iframe className='fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-2/3 h-3/4'
                     src={"https://www.youtube.com/embed/" + trailerDetails?.key + "?autoplay=1&mute=1"}
-                    frameBorder="0" allow="autoplay; encrypted-media" allowFullScreen>
+                    frameBorder="0" allow="autoplay; encrypted-media" allowFullScreen onLoad={handleIframeLoad}>
                 </iframe>
                 <button onClick={() => setTrailerPage(false)} className="fixed z-10 text-lg rounded-full p-1 px-3 bg-gray-500 text-white top-16 right-48"><i className="fa-solid fa-xmark"></i></button>
             </div>}

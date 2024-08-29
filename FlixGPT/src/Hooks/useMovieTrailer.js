@@ -12,7 +12,7 @@ const useMovieTrailer = (id)=>{
     } 
     useEffect(()=>{
         getMovieTrailer();
-    }, []);
+    }, [id]);
     return trailerDetails;
 }
 

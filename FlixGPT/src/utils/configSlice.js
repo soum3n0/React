@@ -4,10 +4,14 @@ const configSlice = createSlice({
     name: "config",
     initialState:{
         lang: "en",
+        langName: "English",
     },
     reducers:{
         changeLanguage: (state, action) =>{
-            state.lang = action.payload;
+            // console.log(action.payload);
+            const arr = action.payload.split(",");
+            state.lang = arr[0];
+            state.langName = arr[1];
         },
     },
 });
