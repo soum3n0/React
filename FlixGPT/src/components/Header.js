@@ -118,7 +118,7 @@ const Header = () => {
                                 <li className='flex gap-2 items-center mx-auto'>
                                     <label htmlFor="language">Language</label>
                                     <select name="language" className='p-1 cursor-pointer bg-black border border-gray-500 text-gray-500 rounded-lg' onChange={changeLang}>
-                                    <option className='text-green-500'>{langName}</option>
+                                    <option className='text-green-500' disabled>{langName}</option>
                                         {languageList.map(lang => <option key={lang.identifier} value={`${lang.identifier},${lang.value}`}>{lang.value}</option>)}
                                     </select>
                                 </li>
